@@ -1,0 +1,123 @@
+{
+  "name": "catspeak-vscode",
+  "displayName": "Catspeak Language Support",
+  "description": "Language support for Catspeak scripting language",
+  "version": "0.1.0",
+  "publisher": "catspeak",
+  "engines": {
+    "vscode": "^1.63.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "catspeak",
+    "gamemaker",
+    "scripting"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/katsaii/catspeak-lang"
+  },
+  "icon": "icon.png",
+  "activationEvents": [
+    "onLanguage:catspeak"
+  ],
+  "main": "./client/out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "catspeak",
+        "extensions": [
+          ".meow"
+        ],
+        "aliases": [
+          "Catspeak",
+          "catspeak"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icon.svg",
+          "dark": "./icon.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "catspeak",
+        "scopeName": "source.catspeak",
+        "path": "./syntaxes/catspeak.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Catspeak",
+      "properties": {
+        "catspeak.semanticHighlighting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable semantic highlighting for Catspeak files"
+        },
+        "catspeak.diagnosticSeverity": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "hint"
+          ],
+          "default": "warning",
+          "description": "Diagnostic severity level for reporting issues"
+        },
+        "catspeak.formatting.indentSize": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Number of spaces per indentation level"
+        },
+        "catspeak.formatting.useTabs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use tabs instead of spaces for indentation"
+        },
+        "catspeak.autoClosingBrackets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable auto-closing brackets"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "catspeak.restartServer",
+        "title": "Restart Language Server",
+        "category": "Catspeak"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "catspeak-icons",
+        "label": "Catspeak File Icons",
+        "path": "./icons/catspeak-icon-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "package": "webpack --mode production",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "vsce:package": "vsce package",
+    "postinstall": "cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "@vscode/vsce": "^3.7.1",
+    "ts-loader": "^9.5.7",
+    "typescript": "^4.9.5",
+    "webpack": "^5.106.1",
+    "webpack-cli": "^7.0.2"
+  }
+}
