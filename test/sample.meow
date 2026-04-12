@@ -1,0 +1,22 @@
+-- Sample Catspeak file for testing the extension
+
+-- The greeting message displayed to the user
+let greeting = "Hello, world!"
+
+-- Adds two numbers together and returns the result
+let add = fun(a, b) {
+  return a + b
+}
+
+-- The computed result of 1 + 2
+let result = add(1, 2)
+
+-- Check if the result is positive
+if result > 0 {
+  let msg = "positive"
+}
+
+-- Try hovering over 'add' to see the doc comment
+-- Try hovering over 'draw_text' to see GML builtin info
+draw_text(10, 10, greeting)
+show_debug_message(result)

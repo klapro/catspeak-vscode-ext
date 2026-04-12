@@ -1,0 +1,10 @@
+{
+  "iconDefinitions": {
+    "_catspeak_file": {
+      "iconPath": "../icon.svg"
+    }
+  },
+  "fileExtensions": {
+    "meow": "_catspeak_file"
+  }
+}
