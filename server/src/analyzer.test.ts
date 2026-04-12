@@ -503,13 +503,13 @@ describe('diagnostic generation', () => {
 
   describe('undefined variable reference warnings', () => {
     test('warns on undefined variable reference', () => {
-      const { ast } = parse('y');
+      const { ast } = parse('zzz_not_defined');
       const result = analyze(ast);
       const warnings = result.diagnostics.filter(
         d => d.severity === DiagnosticSeverity.Warning
       );
       expect(warnings.length).toBe(1);
-      expect(warnings[0].message).toContain('y');
+      expect(warnings[0].message).toContain('zzz_not_defined');
       expect(warnings[0].source).toBe('catspeak');
     });
 

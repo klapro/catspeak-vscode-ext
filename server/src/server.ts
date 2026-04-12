@@ -316,6 +316,15 @@ connection.onHover((params) => {
     }
   }
 
+  // Also check raw tokens for keywords/variables not in the AST (self, other, x, y, etc.)
+  const tokenName = findTokenAtPosition(state.parseResult.tokens, line, character);
+  if (tokenName) {
+    const builtin = GML_BUILTINS.get(tokenName);
+    if (builtin) {
+      return { contents: { kind: MarkupKind.Markdown, value: formatGmlHover(builtin) } } as Hover;
+    }
+  }
+
   return null;
 });
 
@@ -345,6 +354,23 @@ function findIdentifierAtPositionFromAST(ast: ProgramNode, line: number, charact
     return null;
   }
   return walk(ast);
+}
+
+/**
+ * Find the token value at a given position from the token array.
+ * Useful for keywords and identifiers that may not appear in the AST.
+ */
+function findTokenAtPosition(tokens: import('./lexer').Token[], line: number, character: number): string | null {
+  for (const tok of tokens) {
+    if (tok.type === 'Keyword' || tok.type === 'Identifier') {
+      if (tok.range.start.line === line &&
+          character >= tok.range.start.character &&
+          character < tok.range.end.character) {
+        return tok.value;
+      }
+    }
+  }
+  return null;
 }
 
 /**

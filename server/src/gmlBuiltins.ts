@@ -1,6 +1,6 @@
 /**
- * GML built-in function definitions for hover info and completions.
- * These are native GameMaker functions commonly exposed through Catspeak.
+ * GML built-in function and variable definitions for hover info and completions.
+ * These are native GameMaker elements commonly exposed through Catspeak.
  */
 
 export interface GmlBuiltin {
@@ -9,13 +9,130 @@ export interface GmlBuiltin {
   description: string;
   params: { name: string; description: string }[];
   returns: string;
+  kind: 'function' | 'variable' | 'constant' | 'keyword';
 }
 
 export const GML_BUILTINS: Map<string, GmlBuiltin> = new Map();
 
-function def(b: GmlBuiltin): void {
-  GML_BUILTINS.set(b.name, b);
+function def(b: Omit<GmlBuiltin, 'kind'> & { kind?: GmlBuiltin['kind'] }): void {
+  GML_BUILTINS.set(b.name, { ...b, kind: b.kind ?? 'function' } as GmlBuiltin);
 }
+
+function defVar(name: string, type: string, description: string): void {
+  GML_BUILTINS.set(name, {
+    name, signature: name, description, params: [], returns: type, kind: 'variable',
+  });
+}
+
+function defConst(name: string, type: string, description: string): void {
+  GML_BUILTINS.set(name, {
+    name, signature: name, description, params: [], returns: type, kind: 'constant',
+  });
+}
+
+function defKeyword(name: string, description: string): void {
+  GML_BUILTINS.set(name, {
+    name, signature: name, description, params: [], returns: '', kind: 'keyword',
+  });
+}
+
+// -- Instance Keywords --
+defKeyword('self', 'Refers to the current instance executing the code. Used to access the instance\'s own variables and methods.');
+defKeyword('other', 'Refers to the "other" instance involved in a collision event, or the calling instance in a with() statement.');
+defKeyword('all', 'Refers to all active instances in the room. Used with functions like instance_destroy() or with().');
+defKeyword('noone', 'A special constant representing no instance (value -4). Used to check if an instance reference is invalid.');
+defKeyword('global', 'Accesses the global scope. Variables stored on global persist across all instances and rooms.');
+
+// -- Common Instance Variables --
+defVar('x', 'Real', 'The x-coordinate of the instance in the room.');
+defVar('y', 'Real', 'The y-coordinate of the instance in the room.');
+defVar('xprevious', 'Real', 'The x-coordinate of the instance in the previous step.');
+defVar('yprevious', 'Real', 'The y-coordinate of the instance in the previous step.');
+defVar('xstart', 'Real', 'The x-coordinate where the instance was created.');
+defVar('ystart', 'Real', 'The y-coordinate where the instance was created.');
+defVar('hspeed', 'Real', 'The horizontal speed of the instance (pixels per step).');
+defVar('vspeed', 'Real', 'The vertical speed of the instance (pixels per step).');
+defVar('speed', 'Real', 'The overall speed of the instance (pixels per step).');
+defVar('direction', 'Real', 'The direction of movement in degrees (0 = right, 90 = up, 180 = left, 270 = down).');
+defVar('friction', 'Real', 'The amount of friction applied to the instance speed each step.');
+defVar('gravity', 'Real', 'The amount of gravity applied to the instance each step.');
+defVar('gravity_direction', 'Real', 'The direction of gravity in degrees.');
+defVar('image_index', 'Real', 'The current sub-image index of the sprite being displayed.');
+defVar('image_speed', 'Real', 'The speed at which the sprite sub-images animate (1 = one frame per step).');
+defVar('image_xscale', 'Real', 'The horizontal scale of the sprite (1 = normal, -1 = flipped).');
+defVar('image_yscale', 'Real', 'The vertical scale of the sprite (1 = normal, -1 = flipped).');
+defVar('image_angle', 'Real', 'The rotation angle of the sprite in degrees.');
+defVar('image_alpha', 'Real', 'The transparency of the sprite (0 = invisible, 1 = fully opaque).');
+defVar('image_blend', 'Colour', 'The blend colour applied to the sprite.');
+defVar('sprite_index', 'Asset.GMSprite', 'The sprite resource assigned to this instance.');
+defVar('sprite_width', 'Real', 'The width of the current sprite.');
+defVar('sprite_height', 'Real', 'The height of the current sprite.');
+defVar('mask_index', 'Asset.GMSprite', 'The sprite used for collision detection. Set to -1 to use sprite_index.');
+defVar('depth', 'Real', 'The drawing depth of the instance. Lower values are drawn on top.');
+defVar('layer', 'Layer ID', 'The layer the instance belongs to.');
+defVar('visible', 'Bool', 'Whether the instance is visible and will be drawn.');
+defVar('solid', 'Bool', 'Whether the instance is solid for collision purposes.');
+defVar('persistent', 'Bool', 'Whether the instance persists when changing rooms.');
+defVar('alarm', 'Array<Real>', 'Array of alarm timers (alarm[0] through alarm[11]). Counts down each step.');
+defVar('object_index', 'Asset.GMObject', 'The object resource this instance was created from.');
+defVar('id', 'Id.Instance', 'The unique instance ID of this instance.');
+defVar('bbox_left', 'Real', 'The left edge of the instance bounding box.');
+defVar('bbox_right', 'Real', 'The right edge of the instance bounding box.');
+defVar('bbox_top', 'Real', 'The top edge of the instance bounding box.');
+defVar('bbox_bottom', 'Real', 'The bottom edge of the instance bounding box.');
+
+// -- Room/Game Variables --
+defVar('room', 'Asset.GMRoom', 'The current room index.');
+defVar('room_width', 'Real', 'The width of the current room in pixels.');
+defVar('room_height', 'Real', 'The height of the current room in pixels.');
+defVar('room_speed', 'Real', 'The game speed for the current room in steps per second.');
+defVar('fps', 'Real', 'The current frames per second the game is running at.');
+defVar('fps_real', 'Real', 'The actual measured frames per second.');
+defVar('delta_time', 'Real', 'The time elapsed since the last frame in microseconds.');
+defVar('current_time', 'Real', 'The number of milliseconds since the game started.');
+defVar('game_id', 'Real', 'A unique identifier for the running game.');
+
+// -- View/Camera Variables --
+defVar('view_enabled', 'Bool', 'Whether views are enabled in the current room.');
+defVar('view_current', 'Real', 'The index of the view currently being drawn.');
+defVar('camera_get_view_x', 'Real', 'The x-coordinate of the camera view.');
+defVar('camera_get_view_y', 'Real', 'The y-coordinate of the camera view.');
+
+// -- Input Variables --
+defVar('mouse_x', 'Real', 'The x-coordinate of the mouse in the room.');
+defVar('mouse_y', 'Real', 'The y-coordinate of the mouse in the room.');
+defVar('keyboard_key', 'Real', 'The keycode of the last key pressed.');
+defVar('keyboard_lastkey', 'Real', 'The keycode of the most recently pressed key.');
+defVar('keyboard_string', 'String', 'A string of the last keyboard input characters.');
+
+// -- Constants --
+defConst('pi', 'Real', 'The mathematical constant pi (3.14159...).');
+defConst('true', 'Bool', 'Boolean true value (1).');
+defConst('false', 'Bool', 'Boolean false value (0).');
+defConst('undefined', 'Undefined', 'Represents an undefined or uninitialized value.');
+defConst('infinity', 'Real', 'Represents positive infinity.');
+defConst('NaN', 'Real', 'Represents Not-a-Number.');
+defConst('mb_left', 'Constant', 'Mouse button constant for the left mouse button.');
+defConst('mb_right', 'Constant', 'Mouse button constant for the right mouse button.');
+defConst('mb_middle', 'Constant', 'Mouse button constant for the middle mouse button.');
+defConst('vk_left', 'Constant', 'Virtual key constant for the left arrow key.');
+defConst('vk_right', 'Constant', 'Virtual key constant for the right arrow key.');
+defConst('vk_up', 'Constant', 'Virtual key constant for the up arrow key.');
+defConst('vk_down', 'Constant', 'Virtual key constant for the down arrow key.');
+defConst('vk_space', 'Constant', 'Virtual key constant for the space bar.');
+defConst('vk_enter', 'Constant', 'Virtual key constant for the enter/return key.');
+defConst('vk_escape', 'Constant', 'Virtual key constant for the escape key.');
+defConst('vk_shift', 'Constant', 'Virtual key constant for the shift key.');
+defConst('vk_control', 'Constant', 'Virtual key constant for the control key.');
+defConst('vk_alt', 'Constant', 'Virtual key constant for the alt key.');
+defConst('c_white', 'Colour', 'The colour white.');
+defConst('c_black', 'Colour', 'The colour black.');
+defConst('c_red', 'Colour', 'The colour red.');
+defConst('c_green', 'Colour', 'The colour green.');
+defConst('c_blue', 'Colour', 'The colour blue.');
+defConst('c_yellow', 'Colour', 'The colour yellow.');
+defConst('c_orange', 'Colour', 'The colour orange.');
+defConst('c_aqua', 'Colour', 'The colour aqua/cyan.');
 
 // -- Math --
 def({ name: 'abs', signature: 'abs(val)', description: 'Returns the absolute value of the given number.', params: [{ name: 'val', description: 'The value to get the absolute of' }], returns: 'Real' });
@@ -102,15 +219,33 @@ def({ name: 'lengthdir_y', signature: 'lengthdir_y(len, dir)', description: 'Ret
  * Format a GML builtin for hover display as markdown.
  */
 export function formatGmlHover(builtin: GmlBuiltin): string {
-  let md = `📦 **GML Built-in Function**\n\n`;
-  md += `\`\`\`gml\n${builtin.signature} → ${builtin.returns}\n\`\`\`\n\n`;
+  const kindLabel = builtin.kind === 'function' ? '📦 GML Built-in Function'
+    : builtin.kind === 'variable' ? '📦 GML Instance Variable'
+    : builtin.kind === 'constant' ? '📦 GML Constant'
+    : '📦 GML Keyword';
+
+  let md = `${kindLabel}\n\n`;
+
+  if (builtin.kind === 'function') {
+    md += `\`\`\`gml\n${builtin.signature} → ${builtin.returns}\n\`\`\`\n\n`;
+  } else if (builtin.kind === 'variable') {
+    md += `\`\`\`gml\n${builtin.name} : ${builtin.returns}\n\`\`\`\n\n`;
+  } else if (builtin.kind === 'constant') {
+    md += `\`\`\`gml\n${builtin.name} : ${builtin.returns}\n\`\`\`\n\n`;
+  } else {
+    md += `\`\`\`gml\n${builtin.name}\n\`\`\`\n\n`;
+  }
+
   md += builtin.description + '\n';
+
   if (builtin.params.length > 0) {
     md += '\n**Parameters:**\n';
     for (const p of builtin.params) {
       md += `- \`${p.name}\` — ${p.description}\n`;
     }
   }
-  md += `\n**Returns:** \`${builtin.returns}\``;
+  if (builtin.kind === 'function') {
+    md += `\n**Returns:** \`${builtin.returns}\``;
+  }
   return md;
 }
