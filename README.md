@@ -1,4 +1,4 @@
-# Catspeak VSCode Extension
+# Catspeak
 
 Language support for the [Catspeak](https://github.com/katsaii/catspeak-lang) scripting language in Visual Studio Code. Catspeak is a cross-platform scripting language for GameMaker, created by [katsaii](https://github.com/katsaii).
 
@@ -8,20 +8,13 @@ Language support for the [Catspeak](https://github.com/katsaii/catspeak-lang) sc
 - IntelliSense code completion
 - Go to definition
 - Find all references
-- Hover information
+- Hover information with doc comments
+- GML built-in function documentation
 - Semantic highlighting
 - Error diagnostics
 - Code formatting
 - Bracket matching and auto-closing
 - Comment toggling
-
-## Installation
-
-1. Download the .vsix file
-2. Open VSCode
-3. Go to Extensions view (Ctrl+Shift+X)
-4. Click "..." menu and select "Install from VSIX..."
-5. Select the downloaded .vsix file
 
 ## Configuration
 
@@ -35,7 +28,7 @@ Configure the extension in VSCode settings under the `catspeak` namespace:
 
 ## Usage
 
-Open any .meow file and the extension will automatically activate.
+Open any `.meow` file and the extension will automatically activate.
 
 ## Credits
 
