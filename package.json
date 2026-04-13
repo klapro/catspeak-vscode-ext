@@ -2,7 +2,7 @@
   "name": "catspeak-vscode",
   "displayName": "Catspeak",
   "description": "Language support for Catspeak scripting language",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "publisher": "klapro",
   "engines": {
     "vscode": "^1.63.0"

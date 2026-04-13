@@ -38,7 +38,7 @@ export interface ProjectConfig {
 export const projectNames: Set<string> = new Set();
 
 /** Map of project-defined names to hover info */
-export const projectHoverInfo: Map<string, { signature: string; description: string; kind: string }> = new Map();
+export const projectHoverInfo: Map<string, { signature: string; description: string; kind: string; params?: string[] }> = new Map();
 
 /**
  * Load catspeak.config.json from a workspace folder.
@@ -61,11 +61,23 @@ function isGml(name: string): boolean {
   return GML_BUILTINS.has(name) || GML_ALL_NAMES.has(name);
 }
 
-function addName(name: string, signature: string, description: string, kind: string): void {
+function addName(name: string, signature: string, description: string, kind: string, params?: string[]): void {
   if (isGml(name)) return; // skip GML builtins
   projectNames.add(name);
   if (!projectHoverInfo.has(name)) {
-    projectHoverInfo.set(name, { signature, description, kind });
+    projectHoverInfo.set(name, { signature, description, kind, params });
+  }
+  // For "global.xyz" or "self.xyz", also register just "xyz"
+  // so member access like global.money matches "money"
+  const dotIndex = name.indexOf('.');
+  if (dotIndex !== -1) {
+    const shortName = name.substring(dotIndex + 1);
+    if (shortName && !isGml(shortName)) {
+      projectNames.add(shortName);
+      if (!projectHoverInfo.has(shortName)) {
+        projectHoverInfo.set(shortName, { signature: name, description, kind, params });
+      }
+    }
   }
 }
 
@@ -170,12 +182,11 @@ function walkSection(section: any): void {
     if (params && Array.isArray(params)) {
       // It's a function
       const paramStr = params.map((p: string) => {
-        // Extract just the param name from "name: type - desc" format
         const match = p.match(/^(\w+)/);
         return match ? match[1] : p;
       }).join(', ');
       const ret = returns || 'Any';
-      addName(name, `${name}(${paramStr}) → ${ret}`, desc, 'function');
+      addName(name, `${name}(${paramStr}) → ${ret}`, desc, 'function', params);
     } else if (syntax && syntax.includes('(')) {
       // Has a function-like syntax
       addName(name, syntax.replace(/→.*$/, '').trim() + (returns ? ` → ${returns}` : ''), desc, 'function');
@@ -193,8 +204,18 @@ export function formatProjectHover(name: string): string | null {
   const info = projectHoverInfo.get(name);
   if (!info) return null;
 
-  let md = `🎮 **Project Definition**\n\n`;
+  const kindLabel = info.kind === 'function' ? '🔌 Project Function'
+    : info.kind.startsWith('variable') ? '🔌 Project Variable'
+    : '🔌 Project Definition';
+
+  let md = `${kindLabel}\n\n`;
   md += `\`\`\`catspeak\n${info.signature}\n\`\`\`\n\n`;
   md += info.description;
+  if (info.params && info.params.length > 0) {
+    md += '\n\n**Parameters:**\n';
+    for (const p of info.params) {
+      md += `- \`${p}\`\n`;
+    }
+  }
   return md;
 }

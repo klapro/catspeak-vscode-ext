@@ -263,7 +263,7 @@ describe('formatProjectHover', () => {
     loadProjectConfig(dir);
     const hover = formatProjectHover('my_func');
     expect(hover).not.toBeNull();
-    expect(hover).toContain('🎮');
+    expect(hover).toContain('🔌');
     expect(hover).toContain('my_func');
     expect(hover).toContain('Does stuff');
   });
