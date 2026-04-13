@@ -44,6 +44,7 @@ import { SymbolIndex, IndexedSymbol } from './symbolIndex';
 import { ParseResult, FunctionExpressionNode, LetDeclarationNode, IdentifierNode, MemberExpressionNode, ASTNode, ProgramNode } from './ast';
 import { formatDocument, formatRange } from './formatter';
 import { GML_BUILTINS, formatGmlHover } from './gmlBuiltins';
+import { loadProjectConfig, projectNames, projectHoverInfo, formatProjectHover } from './projectConfig';
 
 // ---- Document State ----
 
@@ -218,6 +219,17 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
     capabilities.workspace && capabilities.workspace.configuration
   );
 
+  // Load project config from workspace root
+  if (params.workspaceFolders && params.workspaceFolders.length > 0) {
+    for (const folder of params.workspaceFolders) {
+      const folderPath = folder.uri.replace('file://', '');
+      loadProjectConfig(decodeURIComponent(folderPath));
+    }
+  } else if (params.rootUri) {
+    const rootPath = params.rootUri.replace('file://', '');
+    loadProjectConfig(decodeURIComponent(rootPath));
+  }
+
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
@@ -322,6 +334,19 @@ connection.onHover((params) => {
     const builtin = GML_BUILTINS.get(tokenName);
     if (builtin) {
       return { contents: { kind: MarkupKind.Markdown, value: formatGmlHover(builtin) } } as Hover;
+    }
+    // Check project config
+    const projectHover = formatProjectHover(tokenName);
+    if (projectHover) {
+      return { contents: { kind: MarkupKind.Markdown, value: projectHover } } as Hover;
+    }
+  }
+
+  // Check project config for identifiers found in AST
+  if (idNode) {
+    const projectHover = formatProjectHover(idNode);
+    if (projectHover) {
+      return { contents: { kind: MarkupKind.Markdown, value: projectHover } } as Hover;
     }
   }
 
@@ -447,12 +472,26 @@ connection.onCompletion((params) => {
   const seen = new Set(items.map(i => i.label));
   for (const [name, builtin] of GML_BUILTINS) {
     if (!seen.has(name)) {
+      seen.add(name);
       result.push({
         label: name,
         kind: LspCompletionItemKind.Function,
         detail: `(GML) ${builtin.signature}`,
         documentation: builtin.description,
         sortText: '50' + name,
+      });
+    }
+  }
+
+  // Add project-defined names
+  for (const [name, info] of projectHoverInfo) {
+    if (!seen.has(name)) {
+      result.push({
+        label: name,
+        kind: info.kind === 'function' ? LspCompletionItemKind.Function : LspCompletionItemKind.Variable,
+        detail: `(Project) ${info.signature}`,
+        documentation: info.description,
+        sortText: '40' + name,
       });
     }
   }

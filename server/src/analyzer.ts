@@ -5,6 +5,7 @@
 import { Range, Position } from './lexer';
 import { GML_BUILTINS } from './gmlBuiltins';
 import { GML_ALL_NAMES } from './gmlNames';
+import { projectNames } from './projectConfig';
 import {
   ASTNode,
   ProgramNode,
@@ -318,7 +319,7 @@ function generateSemanticDiagnostics(
     const resolved = resolveSymbolInScope(scope, ref.name);
     if (resolved) {
       referencedSymbols.add(resolved);
-    } else if (!GML_BUILTINS.has(ref.name) && !GML_ALL_NAMES.has(ref.name) && !CATSPEAK_KEYWORDS.includes(ref.name)) {
+    } else if (!GML_BUILTINS.has(ref.name) && !GML_ALL_NAMES.has(ref.name) && !projectNames.has(ref.name) && !CATSPEAK_KEYWORDS.includes(ref.name)) {
       // Undefined variable reference (skip GML builtins and keywords)
       diagnostics.push({
         range: ref.range,

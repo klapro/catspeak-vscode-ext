@@ -1,0 +1,577 @@
+# STONKS-9800 - Catspeak API Documentation
+# Generated: 2026-04-11T13:52:24.522Z
+# This file is both human-readable and machine-parseable (YAML format)
+
+openapi: "3.0.0"
+info:
+  title: "STONKS-9800 - Catspeak API"
+  version: "1.0.0"
+  description: "API documentation for Catspeak modding framework"
+  x-discovered: "2026-04-11T13:52:24.522Z"
+
+components:
+  schemas:
+
+    # ============================================
+    # MOD FUNCTIONS (6)
+    # Functions provided by the Catspeak framework
+    # ============================================
+    modFunctions:
+      mods_notify:
+        description: "Displays a notification message in the game. Shows as a popup modal that the player must dismiss."
+        syntax: "mods_notify(message)"
+        parameters:
+          - "message: string - The text to display"
+        returns: "void"
+        example: |
+          mods_notify("Hello from my mod!")
+      mod_register_func:
+        description: "Registers a custom function that can be called from the game or other mods."
+        syntax: "mod_register_func(name, function)"
+        parameters:
+          - "name: string - Function name"
+          - "function: function - The function to register"
+        returns: "void"
+        example: |
+          mod_register_func("my_func", fun() { return 42 })
+      show_message:
+        description: "Shows a message dialog box to the player. Similar to mods_notify but uses GameMaker's native dialog."
+        syntax: "show_message(message)"
+        parameters:
+          - "message: string - The message to display"
+        returns: "void"
+        example: |
+          show_message("Game saved successfully!")
+      show_question:
+        description: "Shows a yes/no question dialog to the player."
+        syntax: "show_question(message)"
+        parameters:
+          - "message: string - The question to ask"
+        returns: "boolean - true if yes, false if no"
+        example: |
+          let answer = show_question("Do you want to continue?")
+      show_error:
+        description: "Shows an error message dialog and optionally terminates the game."
+        syntax: "show_error(message, abort)"
+        parameters:
+          - "message: string - Error message"
+          - "abort: boolean - Whether to close the game"
+        returns: "void"
+        example: |
+          show_error("Critical error occurred!", false)
+      show_debug_message:
+        description: "Outputs a debug message to the console/log. Useful for debugging mods."
+        syntax: "show_debug_message(message)"
+        parameters:
+          - "message: string - Debug message"
+        returns: "void"
+        example: |
+          show_debug_message("Player position: " + string(x) + ", " + string(y))
+
+    # ============================================
+    # GAMEMAKER FUNCTIONS (63)
+    # Built-in GameMaker functions available in Catspeak
+    # ============================================
+    gameMakerFunctions:
+      string:
+        description: "Converts a value to a string representation."
+        syntax: "string(value)"
+        parameters:
+          - "value: any - Value to convert"
+        returns: "string"
+        example: |
+          let text = string(123) // "123"
+      string_length:
+        description: "Returns the number of characters in a string."
+        syntax: "string_length(str)"
+        parameters:
+          - "str: string - The string to measure"
+        returns: "number - Length of the string"
+        example: |
+          let len = string_length("hello") // 5
+      string_pos:
+        description: "GameMaker function available in Catspeak"
+        example: "string_pos()"
+      string_copy:
+        description: "GameMaker function available in Catspeak"
+        example: "string_copy()"
+      string_char_at:
+        description: "GameMaker function available in Catspeak"
+        example: "string_char_at()"
+      string_upper:
+        description: "Converts a string to uppercase."
+        syntax: "string_upper(str)"
+        parameters:
+          - "str: string - String to convert"
+        returns: "string - Uppercase version"
+        example: |
+          string_upper("hello") // "HELLO"
+      string_lower:
+        description: "Converts a string to lowercase."
+        syntax: "string_lower(str)"
+        parameters:
+          - "str: string - String to convert"
+        returns: "string - Lowercase version"
+        example: |
+          string_lower("HELLO") // "hello"
+      floor:
+        description: "Rounds a number down to the nearest integer."
+        syntax: "floor(value)"
+        parameters:
+          - "value: number - Number to round down"
+        returns: "number - Rounded down integer"
+        example: |
+          floor(3.7) // 3
+      ceil:
+        description: "Rounds a number up to the nearest integer."
+        syntax: "ceil(value)"
+        parameters:
+          - "value: number - Number to round up"
+        returns: "number - Rounded up integer"
+        example: |
+          ceil(3.2) // 4
+      round:
+        description: "Rounds a number to the nearest integer."
+        syntax: "round(value)"
+        parameters:
+          - "value: number - Number to round"
+        returns: "number - Rounded integer"
+        example: |
+          round(3.5) // 4
+      min:
+        description: "Returns the smallest of two or more numbers."
+        syntax: "min(val1, val2, ...)"
+        parameters:
+          - "val1, val2, ...: number - Numbers to compare"
+        returns: "number - Smallest value"
+        example: |
+          min(5, 2, 8) // 2
+      max:
+        description: "Returns the largest of two or more numbers."
+        syntax: "max(val1, val2, ...)"
+        parameters:
+          - "val1, val2, ...: number - Numbers to compare"
+        returns: "number - Largest value"
+        example: |
+          max(5, 2, 8) // 8
+      abs:
+        description: "Returns the absolute (positive) value of a number."
+        syntax: "abs(value)"
+        parameters:
+          - "value: number - Number to get absolute value of"
+        returns: "number - Absolute value"
+        example: |
+          abs(-5) // 5
+      sign:
+        description: "GameMaker function available in Catspeak"
+        example: "sign()"
+      sqrt:
+        description: "Returns the square root of a number."
+        syntax: "sqrt(value)"
+        parameters:
+          - "value: number - Number to get square root of"
+        returns: "number - Square root"
+        example: |
+          sqrt(16) // 4
+      power:
+        description: "Raises a number to a power."
+        syntax: "power(base, exponent)"
+        parameters:
+          - "base: number - Base number"
+          - "exponent: number - Power to raise to"
+        returns: "number - Result"
+        example: |
+          power(2, 3) // 8
+      irandom:
+        description: "Returns a random integer between 0 and the specified value (inclusive)."
+        syntax: "irandom(max)"
+        parameters:
+          - "max: number - Maximum value"
+        returns: "number - Random integer"
+        example: |
+          irandom(10) // Random number 0-10
+      irandom_range:
+        description: "Returns a random integer between min and max (inclusive)."
+        syntax: "irandom_range(min, max)"
+        parameters:
+          - "min: number - Minimum value"
+          - "max: number - Maximum value"
+        returns: "number - Random integer"
+        example: |
+          irandom_range(5, 10) // Random number 5-10
+      random:
+        description: "Returns a random floating-point number between 0 and the specified value."
+        syntax: "random(max)"
+        parameters:
+          - "max: number - Maximum value"
+        returns: "number - Random float"
+        example: |
+          random(1.0) // Random number 0.0-1.0
+      random_range:
+        description: "Returns a random floating-point number between min and max."
+        syntax: "random_range(min, max)"
+        parameters:
+          - "min: number - Minimum value"
+          - "max: number - Maximum value"
+        returns: "number - Random float"
+        example: |
+          random_range(5.0, 10.0)
+      array_create:
+        description: "Creates a new array with a specified size and optional default value."
+        syntax: "array_create(size, [value])"
+        parameters:
+          - "size: number - Array size"
+          - "value: any (optional) - Default value for elements"
+        returns: "array - New array"
+        example: |
+          let arr = array_create(5, 0) // [0,0,0,0,0]
+      array_push:
+        description: "Adds an element to the end of an array."
+        syntax: "array_push(array, value)"
+        parameters:
+          - "array: array - The array"
+          - "value: any - Value to add"
+        returns: "void"
+        example: |
+          array_push(myArray, 42)
+      array_length:
+        description: "Returns the number of elements in an array."
+        syntax: "array_length(array)"
+        parameters:
+          - "array: array - The array"
+        returns: "number - Array length"
+        example: |
+          let len = array_length(myArray)
+      array_delete:
+        description: "Removes an element at a specific index from an array."
+        syntax: "array_delete(array, index, count)"
+        parameters:
+          - "array: array - The array"
+          - "index: number - Position to delete"
+          - "count: number - Number of elements to delete"
+        returns: "void"
+        example: |
+          array_delete(myArray, 2, 1)
+      array_insert:
+        description: "Inserts an element at a specific position in an array."
+        syntax: "array_insert(array, index, value)"
+        parameters:
+          - "array: array - The array"
+          - "index: number - Position to insert"
+          - "value: any - Value to insert"
+        returns: "void"
+        example: |
+          array_insert(myArray, 0, "first")
+      array_pop:
+        description: "Removes and returns the last element from an array."
+        syntax: "array_pop(array)"
+        parameters:
+          - "array: array - The array"
+        returns: "any - The removed element"
+        example: |
+          let last = array_pop(myArray)
+      is_undefined:
+        description: "Checks if a value is undefined."
+        syntax: "is_undefined(value)"
+        parameters:
+          - "value: any - Value to check"
+        returns: "boolean - true if undefined"
+        example: |
+          if is_undefined(myVar) { /* ... */ }
+      is_string:
+        description: "Checks if a value is a string."
+        syntax: "is_string(value)"
+        parameters:
+          - "value: any - Value to check"
+        returns: "boolean - true if string"
+        example: |
+          if is_string(myVar) { /* ... */ }
+      is_real:
+        description: "Checks if a value is a number."
+        syntax: "is_real(value)"
+        parameters:
+          - "value: any - Value to check"
+        returns: "boolean - true if number"
+        example: |
+          if is_real(myVar) { /* ... */ }
+      is_array:
+        description: "Checks if a value is an array."
+        syntax: "is_array(value)"
+        parameters:
+          - "value: any - Value to check"
+        returns: "boolean - true if array"
+        example: |
+          if is_array(myVar) { /* ... */ }
+      draw_text:
+        description: "Draws text at the specified position on the screen."
+        syntax: "draw_text(x, y, text)"
+        parameters:
+          - "x: number - X position"
+          - "y: number - Y position"
+          - "text: string - Text to draw"
+        returns: "void"
+        example: |
+          draw_text(100, 100, "Hello World")
+      draw_text_ext:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_text_ext()"
+      draw_rectangle:
+        description: "Draws a rectangle on the screen."
+        syntax: "draw_rectangle(x1, y1, x2, y2, outline)"
+        parameters:
+          - "x1, y1: number - Top-left corner"
+          - "x2, y2: number - Bottom-right corner"
+          - "outline: boolean - Draw outline only"
+        returns: "void"
+        example: |
+          draw_rectangle(10, 10, 100, 100, false)
+      draw_circle:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_circle()"
+      draw_line:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_line()"
+      draw_sprite:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_sprite()"
+      draw_sprite_ext:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_sprite_ext()"
+      draw_set_color:
+        description: "Sets the current drawing color."
+        syntax: "draw_set_color(color)"
+        parameters:
+          - "color: color - Color constant or RGB value"
+        returns: "void"
+        example: |
+          draw_set_color(c_red)
+      draw_set_alpha:
+        description: "Sets the transparency level for drawing (0.0 = invisible, 1.0 = opaque)."
+        syntax: "draw_set_alpha(alpha)"
+        parameters:
+          - "alpha: number - Alpha value 0.0-1.0"
+        returns: "void"
+        example: |
+          draw_set_alpha(0.5) // 50% transparent
+      draw_set_font:
+        description: "GameMaker function available in Catspeak"
+        example: "draw_set_font()"
+      window_get_width:
+        description: "Returns the width of the game window in pixels."
+        syntax: "window_get_width()"
+        returns: "number - Window width"
+        example: |
+          let w = window_get_width()
+      window_get_height:
+        description: "Returns the height of the game window in pixels."
+        syntax: "window_get_height()"
+        returns: "number - Window height"
+        example: |
+          let h = window_get_height()
+      make_color_rgb:
+        description: "Creates a color from red, green, and blue components (0-255)."
+        syntax: "make_color_rgb(red, green, blue)"
+        parameters:
+          - "red: number - Red 0-255"
+          - "green: number - Green 0-255"
+          - "blue: number - Blue 0-255"
+        returns: "color - Color value"
+        example: |
+          let purple = make_color_rgb(128, 0, 128)
+      make_color_hsv:
+        description: "GameMaker function available in Catspeak"
+        example: "make_color_hsv()"
+      color_get_red:
+        description: "GameMaker function available in Catspeak"
+        example: "color_get_red()"
+      color_get_green:
+        description: "GameMaker function available in Catspeak"
+        example: "color_get_green()"
+      color_get_blue:
+        description: "GameMaker function available in Catspeak"
+        example: "color_get_blue()"
+      instance_create:
+        description: "GameMaker function available in Catspeak"
+        example: "instance_create()"
+      instance_destroy:
+        description: "GameMaker function available in Catspeak"
+        example: "instance_destroy()"
+      instance_exists:
+        description: "GameMaker function available in Catspeak"
+        example: "instance_exists()"
+      instance_number:
+        description: "GameMaker function available in Catspeak"
+        example: "instance_number()"
+      instance_find:
+        description: "GameMaker function available in Catspeak"
+        example: "instance_find()"
+      file_exists:
+        description: "GameMaker function available in Catspeak"
+        example: "file_exists()"
+      file_delete:
+        description: "GameMaker function available in Catspeak"
+        example: "file_delete()"
+      file_text_open_read:
+        description: "Opens a text file for reading."
+        syntax: "file_text_open_read(filename)"
+        parameters:
+          - "filename: string - File path"
+        returns: "number - File handle"
+        example: |
+          let file = file_text_open_read("data.txt")
+      file_text_open_write:
+        description: "Opens a text file for writing. Creates the file if it doesn't exist."
+        syntax: "file_text_open_write(filename)"
+        parameters:
+          - "filename: string - File path"
+        returns: "number - File handle"
+        example: |
+          let file = file_text_open_write("data.txt")
+      file_text_open_append:
+        description: "GameMaker function available in Catspeak"
+        example: "file_text_open_append()"
+      file_text_close:
+        description: "Closes an open file handle."
+        syntax: "file_text_close(file)"
+        parameters:
+          - "file: number - File handle"
+        returns: "void"
+        example: |
+          file_text_close(file)
+      file_text_read_string:
+        description: "Reads a string from an open file."
+        syntax: "file_text_read_string(file)"
+        parameters:
+          - "file: number - File handle"
+        returns: "string - Read text"
+        example: |
+          let text = file_text_read_string(file)
+      file_text_write_string:
+        description: "Writes a string to an open file."
+        syntax: "file_text_write_string(file, str)"
+        parameters:
+          - "file: number - File handle"
+          - "str: string - Text to write"
+        returns: "void"
+        example: |
+          file_text_write_string(file, "Hello")
+      file_text_readln:
+        description: "GameMaker function available in Catspeak"
+        example: "file_text_readln()"
+      file_text_writeln:
+        description: "GameMaker function available in Catspeak"
+        example: "file_text_writeln()"
+      file_text_eof:
+        description: "GameMaker function available in Catspeak"
+        example: "file_text_eof()"
+
+    # ============================================
+    # GLOBAL VARIABLES (9)
+    # Game-specific global variables
+    # ============================================
+    globals:
+      "global.money":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.money
+          global.money = newValue
+      "global.day":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.day
+          global.day = newValue
+      "global.numberofcompany":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.numberofcompany
+          global.numberofcompany = newValue
+      "global.company_name":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.company_name
+          global.company_name = newValue
+      "global.company_price":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.company_price
+          global.company_price = newValue
+      "global.company_profit":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.company_profit
+          global.company_profit = newValue
+      "global.company_hype":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.company_hype
+          global.company_hype = newValue
+      "global.company_liq":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.company_liq
+          global.company_liq = newValue
+      "global.human_finans":
+        description: "Global variable discovered in game"
+        example: |
+          let value = global.human_finans
+          global.human_finans = newValue
+
+    # ============================================
+    # COLOR CONSTANTS (18)
+    # Available color constants
+    # ============================================
+    colors:
+      c_white:
+        description: "White color constant"
+        example: "draw_set_color(c_white)"
+      c_black:
+        description: "Black color constant"
+        example: "draw_set_color(c_black)"
+      c_red:
+        description: "Red color constant"
+        example: "draw_set_color(c_red)"
+      c_green:
+        description: "Green color constant"
+        example: "draw_set_color(c_green)"
+      c_blue:
+        description: "Blue color constant"
+        example: "draw_set_color(c_blue)"
+      c_yellow:
+        description: "Yellow color constant"
+        example: "draw_set_color(c_yellow)"
+      c_orange:
+        description: "Orange color constant"
+        example: "draw_set_color(c_orange)"
+      c_purple:
+        description: "Purple color constant"
+        example: "draw_set_color(c_purple)"
+      c_gray:
+        description: "Gray color constant"
+        example: "draw_set_color(c_gray)"
+      c_grey:
+        description: "Grey color constant (same as c_gray)"
+        example: "draw_set_color(c_grey)"
+      c_aqua:
+        description: "Aqua/cyan color constant"
+        example: "draw_set_color(c_aqua)"
+      c_fuchsia:
+        description: "Color constant"
+        example: "draw_set_color(c_fuchsia)"
+      c_lime:
+        description: "Color constant"
+        example: "draw_set_color(c_lime)"
+      c_maroon:
+        description: "Color constant"
+        example: "draw_set_color(c_maroon)"
+      c_navy:
+        description: "Color constant"
+        example: "draw_set_color(c_navy)"
+      c_olive:
+        description: "Color constant"
+        example: "draw_set_color(c_olive)"
+      c_silver:
+        description: "Color constant"
+        example: "draw_set_color(c_silver)"
+      c_teal:
+        description: "Color constant"
+        example: "draw_set_color(c_teal)"
