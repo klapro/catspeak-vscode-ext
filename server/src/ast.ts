@@ -22,7 +22,8 @@ export type NodeType =
   | 'UnaryExpression'
   | 'AssignmentExpression'
   | 'BlockExpression'
-  | 'ExpressionStatement';
+  | 'ExpressionStatement'
+  | 'StructExpression';
 
 export interface ASTNode {
   type: NodeType;
@@ -131,6 +132,16 @@ export interface BlockExpressionNode extends ASTNode {
 export interface ExpressionStatementNode extends ASTNode {
   type: 'ExpressionStatement';
   expression: ASTNode;
+}
+
+export interface StructProperty {
+  key: IdentifierNode;
+  value: ASTNode;
+}
+
+export interface StructExpressionNode extends ASTNode {
+  type: 'StructExpression';
+  properties: StructProperty[];
 }
 
 export interface ParseError {

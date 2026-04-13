@@ -19,6 +19,7 @@ import {
   MemberExpressionNode,
   AssignmentExpressionNode,
   ExpressionStatementNode,
+  StructExpressionNode,
   ParseError,
 } from './ast';
 
@@ -598,6 +599,30 @@ function collectSymbols(
         }
         // Always visit the right side
         visit(assignNode.right);
+        break;
+      }
+
+      case 'StructExpression': {
+        const structNode = node as StructExpressionNode;
+        // Struct property keys are declarations, not references — don't flag them
+        for (const prop of structNode.properties) {
+          // Mark the key as a declaration semantic token (property)
+          semanticTokens.push({
+            line: prop.key.range.start.line,
+            character: prop.key.range.start.character,
+            length: prop.key.name.length,
+            tokenType: 'property',
+            tokenModifiers: ['declaration'],
+          });
+          // Mark key as a declaration reference so it's not flagged as undefined
+          references.push({
+            name: prop.key.name,
+            range: prop.key.range,
+            isDeclaration: true,
+          });
+          // Visit the value
+          visit(prop.value);
+        }
         break;
       }
 

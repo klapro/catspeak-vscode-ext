@@ -24,6 +24,8 @@ import {
   AssignmentExpressionNode,
   BlockExpressionNode,
   ExpressionStatementNode,
+  StructExpressionNode,
+  StructProperty,
   ParseError,
   ParseResult,
 } from './ast';
@@ -387,6 +389,106 @@ export function parse(source: string): ParseResult {
     };
   }
 
+  /**
+   * Determine if { starts a struct literal or a block expression.
+   */
+  function parseBlockOrStruct(): ASTNode {
+    const savedPos = pos;
+    const start = current().range.start;
+    advance(); // consume '{'
+    skipNewlines();
+
+    // Empty {} — treat as empty struct
+    if (check('Punctuation', '}')) {
+      advance();
+      return {
+        type: 'StructExpression',
+        properties: [],
+        children: [],
+        range: makeRange(start, current().range.start),
+      } as StructExpressionNode;
+    }
+
+    // Check if it looks like a struct: identifier/keyword followed by :
+    if ((current().type === 'Identifier' || current().type === 'Keyword') && isStructStart()) {
+      pos = savedPos;
+      return parseStructExpression();
+    }
+
+    // It's a block — we already consumed { and skipped newlines
+    const body: ASTNode[] = [];
+    while (!isAtEnd() && !check('Punctuation', '}')) {
+      const stmt = parseStatement();
+      if (stmt) body.push(stmt);
+      skipNewlines();
+    }
+    expect('Punctuation', '}');
+    return {
+      type: 'BlockExpression',
+      body,
+      children: body,
+      range: makeRange(start, current().range.start),
+    } as BlockExpressionNode;
+  }
+
+  function isStructStart(): boolean {
+    const saved = pos;
+    advance(); // skip identifier/keyword
+    while (pos < tokens.length && current().type === 'Newline') advance();
+    const result = check('Punctuation', ':');
+    pos = saved;
+    return result;
+  }
+
+  function parseStructExpression(): StructExpressionNode {
+    const start = current().range.start;
+    expect('Punctuation', '{');
+    skipNewlines();
+
+    const properties: StructProperty[] = [];
+    const children: ASTNode[] = [];
+
+    while (!isAtEnd() && !check('Punctuation', '}')) {
+      const keyTok = current();
+      let key: IdentifierNode;
+      if (keyTok.type === 'Identifier' || keyTok.type === 'Keyword') {
+        advance();
+        key = {
+          type: 'Identifier',
+          name: keyTok.value,
+          children: [],
+          range: keyTok.range,
+        };
+      } else {
+        addError(`Expected property name, got '${keyTok.value}'`, keyTok.range);
+        synchronize();
+        skipNewlines();
+        continue;
+      }
+
+      skipNewlines();
+      expect('Punctuation', ':');
+      skipNewlines();
+
+      const value = parseExpression();
+      properties.push({ key, value });
+      children.push(key, value);
+
+      skipNewlines();
+      consume('Punctuation', ',');
+      skipNewlines();
+    }
+
+    expect('Punctuation', '}');
+
+    return {
+      type: 'StructExpression',
+      properties,
+      children,
+      range: makeRange(start, current().range.start),
+    };
+  }
+
   function createErrorNode(): ASTNode {
     const range = current().range;
     return {
@@ -651,9 +753,9 @@ export function parse(source: string): ParseResult {
       return parseFunctionExpression();
     }
 
-    // Block expression
+    // Block or struct expression
     if (tok.type === 'Punctuation' && tok.value === '{') {
-      return parseBlock();
+      return parseBlockOrStruct();
     }
 
     // Parenthesized expression
