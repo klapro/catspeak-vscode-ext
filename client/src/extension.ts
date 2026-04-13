@@ -34,6 +34,42 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         }
       })
     );
+
+    // Register init config command
+    context.subscriptions.push(
+      vscode.commands.registerCommand('catspeak.initConfig', async () => {
+        const folders = vscode.workspace.workspaceFolders;
+        if (!folders || folders.length === 0) {
+          vscode.window.showErrorMessage('Open a workspace folder first.');
+          return;
+        }
+        const configUri = vscode.Uri.joinPath(folders[0].uri, 'catspeak.config.json');
+        try {
+          await vscode.workspace.fs.stat(configUri);
+          const overwrite = await vscode.window.showWarningMessage(
+            'catspeak.config.json already exists. Overwrite?', 'Yes', 'No'
+          );
+          if (overwrite !== 'Yes') return;
+        } catch {
+          // File doesn't exist, good
+        }
+        const template = JSON.stringify({
+          "$schema": "https://raw.githubusercontent.com/klapro/catspeak-vscode-ext/main/catspeak.config.schema.json",
+          "import": [],
+          "globals": [
+            { "name": "global.my_variable", "type": "Real", "description": "My custom global variable" }
+          ],
+          "functions": [
+            { "name": "my_custom_func", "params": ["arg1", "arg2"], "returns": "void", "description": "My custom function" }
+          ],
+          "knownNames": []
+        }, null, 2) + '\n';
+        await vscode.workspace.fs.writeFile(configUri, Buffer.from(template));
+        const doc = await vscode.workspace.openTextDocument(configUri);
+        await vscode.window.showTextDocument(doc);
+        vscode.window.showInformationMessage('Created catspeak.config.json — add your project definitions and restart the language server.');
+      })
+    );
     
     const activationTime = Date.now() - startTime;
     console.log(`Catspeak extension activated in ${activationTime}ms`);

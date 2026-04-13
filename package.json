@@ -92,6 +92,11 @@
         "command": "catspeak.restartServer",
         "title": "Restart Language Server",
         "category": "Catspeak"
+      },
+      {
+        "command": "catspeak.initConfig",
+        "title": "Init Project Config",
+        "category": "Catspeak"
       }
     ],
     "iconThemes": [
