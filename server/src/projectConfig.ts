@@ -174,7 +174,16 @@ function walkSection(section: any): void {
     // Skip GML builtins
     if (isGml(name)) continue;
 
-    const desc = entry.description ?? '';
+    const rawDesc = entry.description ?? '';
+    // Filter out generic auto-generated placeholders
+    const isGeneric = /^(GameMaker function available in Catspeak|Global variable discovered in game|Color constant|Colour constant)$/i.test(rawDesc.trim());
+    const example = entry.example ? String(entry.example).trim() : '';
+    let desc = isGeneric ? '' : rawDesc;
+    if (example && !isGeneric) {
+      desc += (desc ? '\n\n' : '') + '**Example:**\n```catspeak\n' + example + '\n```';
+    } else if (example && isGeneric) {
+      desc = '**Example:**\n```catspeak\n' + example + '\n```';
+    }
     const syntax = entry.syntax ?? name;
     const returns = entry.returns ?? '';
     const params = entry.parameters;

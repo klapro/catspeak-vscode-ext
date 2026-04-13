@@ -476,7 +476,7 @@ components:
           let value = global.money
           global.money = newValue
       "global.day":
-        description: "Global variable discovered in game"
+        description: "Day of the week"
         example: |
           let value = global.day
           global.day = newValue
