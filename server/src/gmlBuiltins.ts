@@ -214,6 +214,260 @@ def({ name: 'move_towards_point', signature: 'move_towards_point(x, y, sp)', des
 def({ name: 'lengthdir_x', signature: 'lengthdir_x(len, dir)', description: 'Returns the horizontal component of a vector.', params: [{ name: 'len', description: 'Length' }, { name: 'dir', description: 'Direction in degrees' }], returns: 'Real' });
 def({ name: 'lengthdir_y', signature: 'lengthdir_y(len, dir)', description: 'Returns the vertical component of a vector.', params: [{ name: 'len', description: 'Length' }, { name: 'dir', description: 'Direction in degrees' }], returns: 'Real' });
 
+// -- Dialog --
+def({ name: 'show_message', signature: 'show_message(str)', description: 'Displays a pop-up message box with the given string and an OK button.', params: [{ name: 'str', description: 'Message to display' }], returns: 'void' });
+def({ name: 'show_question', signature: 'show_question(str)', description: 'Displays a question dialog with OK and Cancel buttons. Returns true if OK is pressed.', params: [{ name: 'str', description: 'Question to display' }], returns: 'Bool' });
+
+// -- Array Functions --
+def({ name: 'array_create', signature: 'array_create(size, [val])', description: 'Creates a 1D array of the given size, optionally initialized to val (default 0).', params: [{ name: 'size', description: 'Length of the array' }, { name: 'val', description: 'Optional initial value for all elements' }], returns: 'Array' });
+def({ name: 'array_copy', signature: 'array_copy(dest, dest_index, src, src_index, length)', description: 'Copies a range of values from one array to another.', params: [{ name: 'dest', description: 'Destination array' }, { name: 'dest_index', description: 'Start index in destination' }, { name: 'src', description: 'Source array' }, { name: 'src_index', description: 'Start index in source' }, { name: 'length', description: 'Number of elements to copy' }], returns: 'void' });
+def({ name: 'array_equals', signature: 'array_equals(var1, var2)', description: 'Compares two arrays and returns whether they are equal.', params: [{ name: 'var1', description: 'First array' }, { name: 'var2', description: 'Second array' }], returns: 'Bool' });
+def({ name: 'array_get', signature: 'array_get(array, index)', description: 'Returns the value at the given index in the array.', params: [{ name: 'array', description: 'The array' }, { name: 'index', description: 'Index to read' }], returns: 'Any' });
+def({ name: 'array_set', signature: 'array_set(array, index, val)', description: 'Sets the value at the given index in the array.', params: [{ name: 'array', description: 'The array' }, { name: 'index', description: 'Index to write' }, { name: 'val', description: 'Value to set' }], returns: 'void' });
+def({ name: 'array_insert', signature: 'array_insert(array, index, val, ...)', description: 'Inserts one or more values into the array at the given index.', params: [{ name: 'array', description: 'The array' }, { name: 'index', description: 'Index to insert at' }, { name: 'val', description: 'Value(s) to insert' }], returns: 'void' });
+def({ name: 'array_delete', signature: 'array_delete(array, index, number)', description: 'Deletes one or more values from the array at the given index.', params: [{ name: 'array', description: 'The array' }, { name: 'index', description: 'Index to delete from' }, { name: 'number', description: 'Number of elements to delete' }], returns: 'void' });
+def({ name: 'array_resize', signature: 'array_resize(array, new_size)', description: 'Resizes the array to the given length.', params: [{ name: 'array', description: 'The array' }, { name: 'new_size', description: 'New length' }], returns: 'void' });
+
+// -- Method Functions --
+def({ name: 'method', signature: 'method(instance, func)', description: 'Binds a function to an instance, returning a new method.', params: [{ name: 'instance', description: 'Instance or struct to bind to' }, { name: 'func', description: 'Function to bind' }], returns: 'Method' });
+def({ name: 'method_get_self', signature: 'method_get_self(method)', description: 'Returns the instance or struct that a method is bound to.', params: [{ name: 'method', description: 'The method' }], returns: 'Id.Instance or Struct' });
+def({ name: 'method_get_index', signature: 'method_get_index(method)', description: 'Returns the script function index of a method.', params: [{ name: 'method', description: 'The method' }], returns: 'Function' });
+
+// -- Type Checking Functions --
+def({ name: 'is_string', signature: 'is_string(val)', description: 'Returns whether the value is a string.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_real', signature: 'is_real(val)', description: 'Returns whether the value is a real number.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_numeric', signature: 'is_numeric(val)', description: 'Returns whether the value is numeric (real or int64).', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_bool', signature: 'is_bool(val)', description: 'Returns whether the value is a boolean.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_array', signature: 'is_array(val)', description: 'Returns whether the value is an array.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_struct', signature: 'is_struct(val)', description: 'Returns whether the value is a struct.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_method', signature: 'is_method(val)', description: 'Returns whether the value is a method.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_ptr', signature: 'is_ptr(val)', description: 'Returns whether the value is a pointer.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_int32', signature: 'is_int32(val)', description: 'Returns whether the value is a 32-bit integer.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_int64', signature: 'is_int64(val)', description: 'Returns whether the value is a 64-bit integer.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_vec3', signature: 'is_vec3(val)', description: 'Returns whether the value is a 3D vector.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_vec4', signature: 'is_vec4(val)', description: 'Returns whether the value is a 4D vector.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_matrix', signature: 'is_matrix(val)', description: 'Returns whether the value is a matrix.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_undefined', signature: 'is_undefined(val)', description: 'Returns whether the value is undefined.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_nan', signature: 'is_nan(val)', description: 'Returns whether the value is NaN (Not a Number).', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'is_infinity', signature: 'is_infinity(val)', description: 'Returns whether the value is infinity.', params: [{ name: 'val', description: 'Value to check' }], returns: 'Bool' });
+def({ name: 'typeof', signature: 'typeof(val)', description: 'Returns a string describing the type of the value.', params: [{ name: 'val', description: 'Value to check' }], returns: 'String' });
+
+// -- Type Conversion --
+def({ name: 'bool', signature: 'bool(val)', description: 'Converts a value to a boolean.', params: [{ name: 'val', description: 'Value to convert' }], returns: 'Bool' });
+def({ name: 'ptr', signature: 'ptr(val)', description: 'Converts a value to a pointer.', params: [{ name: 'val', description: 'Value to convert' }], returns: 'Pointer' });
+def({ name: 'int64', signature: 'int64(val)', description: 'Converts a value to a 64-bit integer.', params: [{ name: 'val', description: 'Value to convert' }], returns: 'Int64' });
+
+// -- Colour (American spelling aliases) --
+def({ name: 'draw_set_color', signature: 'draw_set_color(col)', description: 'Sets the draw colour for subsequent draw calls. Alias for draw_set_colour.', params: [{ name: 'col', description: 'Colour value' }], returns: 'void' });
+def({ name: 'make_color_rgb', signature: 'make_color_rgb(red, green, blue)', description: 'Creates a colour from red, green, and blue components (0-255). Alias for make_colour_rgb.', params: [{ name: 'red', description: 'Red component (0-255)' }, { name: 'green', description: 'Green component (0-255)' }, { name: 'blue', description: 'Blue component (0-255)' }], returns: 'Colour' });
+def({ name: 'make_colour_rgb', signature: 'make_colour_rgb(red, green, blue)', description: 'Creates a colour from red, green, and blue components (0-255).', params: [{ name: 'red', description: 'Red component (0-255)' }, { name: 'green', description: 'Green component (0-255)' }, { name: 'blue', description: 'Blue component (0-255)' }], returns: 'Colour' });
+
+// -- Window --
+def({ name: 'window_get_width', signature: 'window_get_width()', description: 'Returns the width of the game window in pixels.', params: [], returns: 'Real' });
+def({ name: 'window_get_height', signature: 'window_get_height()', description: 'Returns the height of the game window in pixels.', params: [], returns: 'Real' });
+def({ name: 'window_get_x', signature: 'window_get_x()', description: 'Returns the x position of the game window.', params: [], returns: 'Real' });
+def({ name: 'window_get_y', signature: 'window_get_y()', description: 'Returns the y position of the game window.', params: [], returns: 'Real' });
+
+// -- Dialogs --
+def({ name: 'show_message', signature: 'show_message(msg)', description: 'Displays a pop-up message box with the given string.', params: [{ name: 'msg', description: 'Message to display' }], returns: 'void' });
+def({ name: 'show_question', signature: 'show_question(msg)', description: 'Shows a yes/no question dialog, returns true if yes.', params: [{ name: 'msg', description: 'Question to display' }], returns: 'Bool' });
+
+// -- Arrays --
+def({ name: 'array_create', signature: 'array_create(size, [val])', description: 'Creates a 1D array of the given size, optionally initialized to val.', params: [{ name: 'size', description: 'Size of the array' }, { name: 'val', description: 'Optional initial value' }], returns: 'Array' });
+def({ name: 'array_delete', signature: 'array_delete(array, index, number)', description: 'Deletes value(s) from an array at the given position.', params: [{ name: 'array', description: 'The array' }, { name: 'index', description: 'Start index' }, { name: 'number', description: 'Number of elements to delete' }], returns: 'void' });
+
+// -- Type Checking --
+def({ name: 'is_undefined', signature: 'is_undefined(val)', description: 'Returns whether the given value is undefined.', params: [{ name: 'val', description: 'The value to check' }], returns: 'Bool' });
+
+// -- Colour --
+def({ name: 'make_color_rgb', signature: 'make_color_rgb(red, green, blue)', description: 'Creates a colour from RGB components (0-255 each).', params: [{ name: 'red', description: 'Red component (0-255)' }, { name: 'green', description: 'Green component (0-255)' }, { name: 'blue', description: 'Blue component (0-255)' }], returns: 'Colour' });
+
+// -- Drawing (additional) --
+def({ name: 'draw_set_color', signature: 'draw_set_color(col)', description: 'Sets the draw colour (American spelling alias of draw_set_colour).', params: [{ name: 'col', description: 'Colour value' }], returns: 'void' });
+def({ name: 'draw_line', signature: 'draw_line(x1, y1, x2, y2)', description: 'Draws a line between two points.', params: [{ name: 'x1', description: 'Start X' }, { name: 'y1', description: 'Start Y' }, { name: 'x2', description: 'End X' }, { name: 'y2', description: 'End Y' }], returns: 'void' });
+def({ name: 'draw_set_halign', signature: 'draw_set_halign(halign)', description: 'Sets horizontal text alignment.', params: [{ name: 'halign', description: 'Horizontal alignment constant' }], returns: 'void' });
+def({ name: 'draw_set_valign', signature: 'draw_set_valign(valign)', description: 'Sets vertical text alignment.', params: [{ name: 'valign', description: 'Vertical alignment constant' }], returns: 'void' });
+def({ name: 'draw_sprite_ext', signature: 'draw_sprite_ext(sprite, subimg, x, y, xscale, yscale, rot, colour, alpha)', description: 'Draws a sprite with extended options.', params: [{ name: 'sprite', description: 'Sprite index' }, { name: 'subimg', description: 'Sub-image index' }, { name: 'x', description: 'X position' }, { name: 'y', description: 'Y position' }, { name: 'xscale', description: 'Horizontal scale' }, { name: 'yscale', description: 'Vertical scale' }, { name: 'rot', description: 'Rotation angle' }, { name: 'colour', description: 'Blend colour' }, { name: 'alpha', description: 'Alpha transparency' }], returns: 'void' });
+
+// -- Window --
+def({ name: 'window_get_width', signature: 'window_get_width()', description: 'Returns the width of the game window in pixels.', params: [], returns: 'Real' });
+def({ name: 'window_get_height', signature: 'window_get_height()', description: 'Returns the height of the game window in pixels.', params: [], returns: 'Real' });
+
+// -- Instances (additional) --
+def({ name: 'instance_create_layer', signature: 'instance_create_layer(x, y, layer, obj)', description: 'Creates a new instance on the given layer.', params: [{ name: 'x', description: 'X position' }, { name: 'y', description: 'Y position' }, { name: 'layer', description: 'Layer name or id' }, { name: 'obj', description: 'Object index' }], returns: 'Id.Instance' });
+
+// -- Misc (additional) --
+def({ name: 'choose', signature: 'choose(val1, val2, ...)', description: 'Returns a random value from the given arguments.', params: [{ name: 'val1', description: 'First value' }, { name: 'val2', description: 'Second value' }], returns: 'Any' });
+
+// -- Strings (additional) --
+def({ name: 'string_delete', signature: 'string_delete(str, index, count)', description: 'Deletes characters from a string.', params: [{ name: 'str', description: 'Source string' }, { name: 'index', description: 'Start position (1-based)' }, { name: 'count', description: 'Number of characters to delete' }], returns: 'String' });
+def({ name: 'string_insert', signature: 'string_insert(substr, str, index)', description: 'Inserts a substring into a string.', params: [{ name: 'substr', description: 'Substring to insert' }, { name: 'str', description: 'Target string' }, { name: 'index', description: 'Position to insert at (1-based)' }], returns: 'String' });
+def({ name: 'string_replace', signature: 'string_replace(str, old, new)', description: 'Replaces first occurrence of old with new.', params: [{ name: 'str', description: 'Source string' }, { name: 'old', description: 'Substring to find' }, { name: 'new', description: 'Replacement string' }], returns: 'String' });
+def({ name: 'string_replace_all', signature: 'string_replace_all(str, old, new)', description: 'Replaces all occurrences of old with new.', params: [{ name: 'str', description: 'Source string' }, { name: 'old', description: 'Substring to find' }, { name: 'new', description: 'Replacement string' }], returns: 'String' });
+def({ name: 'string_char_at', signature: 'string_char_at(str, index)', description: 'Returns the character at the given position.', params: [{ name: 'str', description: 'The string' }, { name: 'index', description: 'Position (1-based)' }], returns: 'String' });
+def({ name: 'string_count', signature: 'string_count(substr, str)', description: 'Returns the number of occurrences of substr in str.', params: [{ name: 'substr', description: 'Substring to count' }, { name: 'str', description: 'String to search in' }], returns: 'Real' });
+
+// -- Variable Access --
+def({ name: 'variable_instance_exists', signature: 'variable_instance_exists(id, name)', description: 'Returns whether a variable exists on an instance.', params: [{ name: 'id', description: 'Instance id' }, { name: 'name', description: 'Variable name as string' }], returns: 'Bool' });
+def({ name: 'variable_instance_get', signature: 'variable_instance_get(id, name)', description: 'Gets the value of a variable on an instance.', params: [{ name: 'id', description: 'Instance id' }, { name: 'name', description: 'Variable name as string' }], returns: 'Any' });
+def({ name: 'variable_instance_set', signature: 'variable_instance_set(id, name, val)', description: 'Sets the value of a variable on an instance.', params: [{ name: 'id', description: 'Instance id' }, { name: 'name', description: 'Variable name as string' }, { name: 'val', description: 'Value to set' }], returns: 'void' });
+
+// -- Sprites --
+def({ name: 'sprite_get_width', signature: 'sprite_get_width(sprite)', description: 'Returns the width of a sprite.', params: [{ name: 'sprite', description: 'Sprite index' }], returns: 'Real' });
+def({ name: 'sprite_get_height', signature: 'sprite_get_height(sprite)', description: 'Returns the height of a sprite.', params: [{ name: 'sprite', description: 'Sprite index' }], returns: 'Real' });
+
+// -- Room/Game (additional) --
+def({ name: 'room_goto_previous', signature: 'room_goto_previous()', description: 'Goes to the previous room.', params: [], returns: 'void' });
+def({ name: 'game_restart', signature: 'game_restart()', description: 'Restarts the game.', params: [], returns: 'void' });
+def({ name: 'room_restart', signature: 'room_restart()', description: 'Restarts the current room.', params: [], returns: 'void' });
+
+// -- Alarms --
+def({ name: 'alarm_get', signature: 'alarm_get(index)', description: 'Gets the value of an alarm.', params: [{ name: 'index', description: 'Alarm index (0-11)' }], returns: 'Real' });
+def({ name: 'alarm_set', signature: 'alarm_set(index, value)', description: 'Sets the value of an alarm.', params: [{ name: 'index', description: 'Alarm index (0-11)' }, { name: 'value', description: 'Value to set' }], returns: 'void' });
+
+// -- Effects --
+def({ name: 'effect_create_above', signature: 'effect_create_above(kind, x, y, size, colour)', description: 'Creates a particle effect above instances.', params: [{ name: 'kind', description: 'Effect type' }, { name: 'x', description: 'X position' }, { name: 'y', description: 'Y position' }, { name: 'size', description: 'Effect size' }, { name: 'colour', description: 'Effect colour' }], returns: 'void' });
+def({ name: 'effect_create_below', signature: 'effect_create_below(kind, x, y, size, colour)', description: 'Creates a particle effect below instances.', params: [{ name: 'kind', description: 'Effect type' }, { name: 'x', description: 'X position' }, { name: 'y', description: 'Y position' }, { name: 'size', description: 'Effect size' }, { name: 'colour', description: 'Effect colour' }], returns: 'void' });
+
+// -- Motion --
+def({ name: 'motion_add', signature: 'motion_add(dir, speed)', description: 'Adds motion to the instance.', params: [{ name: 'dir', description: 'Direction in degrees' }, { name: 'speed', description: 'Speed to add' }], returns: 'void' });
+def({ name: 'move_wrap', signature: 'move_wrap(hor, vert, margin)', description: 'Wraps the instance around the room edges.', params: [{ name: 'hor', description: 'Wrap horizontally' }, { name: 'vert', description: 'Wrap vertically' }, { name: 'margin', description: 'Margin in pixels' }], returns: 'void' });
+def({ name: 'move_and_collide', signature: 'move_and_collide(xspd, yspd, obj)', description: 'Moves and handles collision.', params: [{ name: 'xspd', description: 'Horizontal speed' }, { name: 'yspd', description: 'Vertical speed' }, { name: 'obj', description: 'Object to collide with' }], returns: 'Bool' });
+
+// -- Collision --
+def({ name: 'collision_rectangle', signature: 'collision_rectangle(x1, y1, x2, y2, obj, prec, notme)', description: 'Checks for collision in a rectangle.', params: [{ name: 'x1', description: 'Left X' }, { name: 'y1', description: 'Top Y' }, { name: 'x2', description: 'Right X' }, { name: 'y2', description: 'Bottom Y' }, { name: 'obj', description: 'Object index' }, { name: 'prec', description: 'Precise collision' }, { name: 'notme', description: 'Exclude self' }], returns: 'Id.Instance' });
+def({ name: 'collision_circle', signature: 'collision_circle(x, y, radius, obj, prec, notme)', description: 'Checks for collision in a circle.', params: [{ name: 'x', description: 'Center X' }, { name: 'y', description: 'Center Y' }, { name: 'radius', description: 'Radius' }, { name: 'obj', description: 'Object index' }, { name: 'prec', description: 'Precise collision' }, { name: 'notme', description: 'Exclude self' }], returns: 'Id.Instance' });
+def({ name: 'collision_line', signature: 'collision_line(x1, y1, x2, y2, obj, prec, notme)', description: 'Checks for collision along a line.', params: [{ name: 'x1', description: 'Start X' }, { name: 'y1', description: 'Start Y' }, { name: 'x2', description: 'End X' }, { name: 'y2', description: 'End Y' }, { name: 'obj', description: 'Object index' }, { name: 'prec', description: 'Precise collision' }, { name: 'notme', description: 'Exclude self' }], returns: 'Id.Instance' });
+
+// -- Distance --
+def({ name: 'distance_to_object', signature: 'distance_to_object(obj)', description: 'Returns distance to the nearest instance of obj.', params: [{ name: 'obj', description: 'Object index' }], returns: 'Real' });
+def({ name: 'distance_to_point', signature: 'distance_to_point(x, y)', description: 'Returns distance to a point.', params: [{ name: 'x', description: 'X position' }, { name: 'y', description: 'Y position' }], returns: 'Real' });
+
+// -- Math (additional) --
+def({ name: 'dsin', signature: 'dsin(angle)', description: 'Returns sine of angle in degrees.', params: [{ name: 'angle', description: 'Angle in degrees' }], returns: 'Real' });
+def({ name: 'dcos', signature: 'dcos(angle)', description: 'Returns cosine of angle in degrees.', params: [{ name: 'angle', description: 'Angle in degrees' }], returns: 'Real' });
+def({ name: 'degtorad', signature: 'degtorad(deg)', description: 'Converts degrees to radians.', params: [{ name: 'deg', description: 'Angle in degrees' }], returns: 'Real' });
+def({ name: 'radtodeg', signature: 'radtodeg(rad)', description: 'Converts radians to degrees.', params: [{ name: 'rad', description: 'Angle in radians' }], returns: 'Real' });
+def({ name: 'log2', signature: 'log2(val)', description: 'Returns base-2 logarithm.', params: [{ name: 'val', description: 'The value' }], returns: 'Real' });
+def({ name: 'log10', signature: 'log10(val)', description: 'Returns base-10 logarithm.', params: [{ name: 'val', description: 'The value' }], returns: 'Real' });
+def({ name: 'ln', signature: 'ln(val)', description: 'Returns natural logarithm.', params: [{ name: 'val', description: 'The value' }], returns: 'Real' });
+def({ name: 'exp', signature: 'exp(val)', description: 'Returns e raised to the power of val.', params: [{ name: 'val', description: 'The exponent' }], returns: 'Real' });
+def({ name: 'sqr', signature: 'sqr(val)', description: 'Returns val squared.', params: [{ name: 'val', description: 'The value' }], returns: 'Real' });
+def({ name: 'dot_product', signature: 'dot_product(x1, y1, x2, y2)', description: 'Returns the dot product of two vectors.', params: [{ name: 'x1', description: 'First vector X' }, { name: 'y1', description: 'First vector Y' }, { name: 'x2', description: 'Second vector X' }, { name: 'y2', description: 'Second vector Y' }], returns: 'Real' });
+
+// -- Bulk GML built-in registration --
+// These are all official GML functions. Functions already defined above with
+// detailed descriptions are skipped (the Map won't overwrite them).
+const BULK_GML_FUNCTIONS = [
+  // Game
+  'game_end','game_restart','game_load','game_load_buffer','game_save','game_save_buffer',
+  'game_get_speed','game_set_speed',
+  // Highscore
+  'highscore_add','highscore_name','highscore_value','highscore_clear','draw_highscore',
+  // Cursor
+  'cursor_sprite',
+  // DS general
+  'ds_set_precision','ds_exists',
+  // DS Grid
+  'ds_grid_create','ds_grid_destroy','ds_grid_width','ds_grid_height','ds_grid_resize',
+  'ds_grid_clear','ds_grid_set','ds_grid_set_disk','ds_grid_set_grid_region','ds_grid_set_region',
+  'ds_grid_shuffle','ds_grid_sort','ds_grid_get','ds_grid_get_max','ds_grid_get_mean',
+  'ds_grid_get_min','ds_grid_get_sum','ds_grid_get_disk_max','ds_grid_get_disk_mean',
+  'ds_grid_get_disk_min','ds_grid_get_disk_sum','ds_grid_add','ds_grid_add_region',
+  'ds_grid_add_disk','ds_grid_add_grid_region','ds_grid_multiply','ds_grid_multiply_disk',
+  'ds_grid_multiply_region','ds_grid_multiply_grid_region','ds_grid_value_exists',
+  'ds_grid_value_disk_exists','ds_grid_value_x','ds_grid_value_y','ds_grid_value_disk_x',
+  'ds_grid_value_disk_y','ds_grid_copy','ds_grid_read','ds_grid_write',
+  'ds_grid_to_mp_grid','mp_grid_to_ds_grid',
+  // DS List (extras not already defined)
+  'ds_list_clear','ds_list_empty','ds_list_set','ds_list_delete','ds_list_find_index',
+  'ds_list_find_value','ds_list_insert','ds_list_replace','ds_list_shuffle','ds_list_sort',
+  'ds_list_copy','ds_list_read','ds_list_write','ds_list_mark_as_list','ds_list_mark_as_map',
+  'ds_list_is_list','ds_list_is_map',
+  // DS Map (extras)
+  'ds_map_exists','ds_map_clear','ds_map_copy','ds_map_replace','ds_map_delete','ds_map_empty',
+  'ds_map_size','ds_map_find_first','ds_map_find_last','ds_map_find_next','ds_map_find_previous',
+  'ds_map_keys_to_array','ds_map_values_to_array','ds_map_set','ds_map_read','ds_map_write',
+  'ds_map_secure_save','ds_map_secure_save_buffer','ds_map_secure_load','ds_map_secure_load_buffer',
+  'ds_map_add_list','ds_map_add_map','ds_map_replace_list','ds_map_replace_map',
+  'ds_map_is_list','ds_map_is_map',
+  // DS Priority
+  'ds_priority_create','ds_priority_destroy','ds_priority_clear','ds_priority_empty',
+  'ds_priority_size','ds_priority_add','ds_priority_change_priority','ds_priority_delete_max',
+  'ds_priority_delete_min','ds_priority_delete_value','ds_priority_find_max','ds_priority_find_min',
+  'ds_priority_find_priority','ds_priority_copy','ds_priority_read','ds_priority_write',
+  // DS Queue
+  'ds_queue_create','ds_queue_destroy','ds_queue_clear','ds_queue_empty','ds_queue_size',
+  'ds_queue_dequeue','ds_queue_enqueue','ds_queue_head','ds_queue_tail','ds_queue_copy',
+  'ds_queue_read','ds_queue_write',
+  // DS Stack
+  'ds_stack_create','ds_stack_destroy','ds_stack_clear','ds_stack_empty','ds_stack_size',
+  'ds_stack_copy','ds_stack_top','ds_stack_pop','ds_stack_push','ds_stack_read','ds_stack_write',
+  // Assets
+  'asset_get_index','asset_get_type','tag_get_asset_ids','tag_get_assets','asset_get_tags',
+  'asset_add_tags','asset_remove_tags','asset_has_tags','asset_has_any_tag','asset_clear_tags',
+  // Animation Curves
+  'animcurve_get','animcurve_get_channel_index','animcurve_get_channel','animcurve_channel_evaluate',
+  'animcurve_create','animcurve_exists','animcurve_channel_new','animcurve_point_new','animcurve_destroy',
+  // Sprites
+  'sprite_get_name','sprite_get_number','sprite_get_speed','sprite_get_speed_type',
+  'sprite_get_width','sprite_get_height','sprite_get_xoffset','sprite_get_yoffset',
+  'sprite_get_bbox_bottom','sprite_get_bbox_left','sprite_get_bbox_right','sprite_get_bbox_top',
+  'sprite_get_bbox_mode','sprite_get_nineslice','sprite_get_tpe','sprite_get_texture',
+  'sprite_get_uvs','sprite_get_info','sprite_exists','sprite_add','sprite_replace',
+  'sprite_duplicate','sprite_assign','sprite_merge','sprite_create_from_surface',
+  'sprite_add_from_surface','sprite_collision_mask','sprite_nineslice_create',
+  'sprite_set_nineslice','sprite_set_offset','sprite_set_bbox_mode','sprite_set_bbox',
+  'sprite_set_speed','sprite_delete','sprite_set_alpha_from_sprite','sprite_set_cache_size',
+  'sprite_set_cache_size_ext','sprite_save','sprite_save_strip','sprite_flush',
+  'sprite_flush_multi','sprite_prefetch','sprite_prefetch_multi',
+  // Skeleton
+  'skeleton_animation_get','skeleton_animation_set','skeleton_animation_get_ext',
+  'skeleton_animation_set_ext','skeleton_animation_get_duration','skeleton_animation_mix',
+  'skeleton_animation_list','skeleton_animation_clear','skeleton_animation_get_frames',
+  'skeleton_animation_get_frame','skeleton_animation_set_frame','skeleton_animation_get_position',
+  'skeleton_animation_set_position','skeleton_animation_get_event_frames',
+  'skeleton_animation_is_looping','skeleton_animation_is_finished',
+  'skeleton_skin_create','skeleton_skin_get','skeleton_skin_set','skeleton_skin_list',
+  'skeleton_attachment_get','skeleton_attachment_set','skeleton_attachment_create',
+  'skeleton_attachment_create_colour','skeleton_bone_data_get','skeleton_bone_data_set',
+  'skeleton_bone_state_get','skeleton_bone_state_set','skeleton_bone_list','skeleton_slot_list',
+  'skeleton_slot_data','skeleton_slot_data_instance','skeleton_find_slot',
+  'skeleton_slot_colour_set','skeleton_slot_colour_get','skeleton_slot_alpha_get',
+  'skeleton_get_minmax','skeleton_get_num_bounds','skeleton_get_bounds',
+  'skeleton_collision_draw_set','draw_skeleton','draw_skeleton_instance',
+  'draw_skeleton_collision','draw_skeleton_time','draw_enable_skeleton_blendmodes',
+  'draw_get_enable_skeleton_blendmodes',
+  // Audio (extras)
+  'audio_exists','audio_get_name','audio_get_type','audio_play_sound_at',
+  'audio_pause_sound','audio_pause_all','audio_resume_sound','audio_resume_all',
+  'audio_stop_all','audio_is_playing','audio_is_paused','audio_create_stream',
+  'audio_destroy_stream','audio_sound_set_track_position','audio_sound_get_track_position',
+  'audio_sound_set_listener_mask','audio_sound_get_listener_mask','audio_sound_length',
+  'audio_sound_pitch','audio_sound_get_pitch','audio_sound_is_playable',
+  'audio_falloff_set_model','audio_sound_gain','audio_sound_get_gain',
+  'audio_master_gain','audio_set_master_gain','audio_get_master_gain',
+  'audio_channel_num','audio_debug',
+  // Paths
+  'path_start','path_end','path_get_closed','path_get_kind','path_get_length',
+  'path_get_name','path_get_number','path_get_point_speed','path_get_point_x',
+  'path_get_point_y','path_get_precision','path_get_speed','path_get_x','path_get_y','draw_path',
+];
+
+// Register bulk functions — only if not already defined with a detailed entry
+for (const name of BULK_GML_FUNCTIONS) {
+  if (!GML_BUILTINS.has(name)) {
+    GML_BUILTINS.set(name, {
+      name,
+      signature: `${name}(...)`,
+      description: `GML built-in function.`,
+      params: [],
+      returns: 'Any',
+      kind: 'function',
+    });
+  }
+}
+
 
 /**
  * Format a GML builtin for hover display as markdown.

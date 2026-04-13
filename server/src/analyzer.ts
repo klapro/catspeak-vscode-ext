@@ -4,6 +4,7 @@
 
 import { Range, Position } from './lexer';
 import { GML_BUILTINS } from './gmlBuiltins';
+import { GML_ALL_NAMES } from './gmlNames';
 import {
   ASTNode,
   ProgramNode,
@@ -97,6 +98,7 @@ export interface SymbolReference {
   name: string;
   range: Range;
   isDeclaration: boolean;
+  isProperty?: boolean;
 }
 
 // ---- Scope Hierarchy Building ----
@@ -308,6 +310,7 @@ function generateSemanticDiagnostics(
   // Check each non-declaration reference to see if it resolves
   for (const ref of references) {
     if (ref.isDeclaration) continue;
+    if (ref.isProperty) continue; // Properties accessed via . should never trigger undefined warnings
 
     const scope = findScopeAtPosition(scopes, ref.range.start.line, ref.range.start.character);
     if (!scope) continue;
@@ -315,7 +318,7 @@ function generateSemanticDiagnostics(
     const resolved = resolveSymbolInScope(scope, ref.name);
     if (resolved) {
       referencedSymbols.add(resolved);
-    } else if (!GML_BUILTINS.has(ref.name) && !CATSPEAK_KEYWORDS.includes(ref.name)) {
+    } else if (!GML_BUILTINS.has(ref.name) && !GML_ALL_NAMES.has(ref.name) && !CATSPEAK_KEYWORDS.includes(ref.name)) {
       // Undefined variable reference (skip GML builtins and keywords)
       diagnostics.push({
         range: ref.range,
@@ -493,6 +496,7 @@ function collectSymbols(
             name: propNode.name,
             range: propNode.range,
             isDeclaration: false,
+            isProperty: true,
           });
         }
         break;
@@ -551,9 +555,98 @@ function collectSymbols(
         break;
       }
 
+      case 'AssignmentExpression': {
+        const assignNode = node as AssignmentExpressionNode;
+        // If left side is a bare identifier with '=', treat as a declaration
+        if (assignNode.operator === '=' && assignNode.left.type === 'Identifier') {
+          const nameNode = assignNode.left as IdentifierNode;
+          if (nameNode.name !== '<error>') {
+            const scope = findEnclosingScope(nameNode.range.start.line, nameNode.range.start.character);
+            if (scope) {
+              // Only register if not already declared in this scope
+              if (!resolveSymbolInScope(scope, nameNode.name)) {
+                const isFun = assignNode.right?.type === 'FunctionExpression';
+                const symbol: CatspeakSymbol = {
+                  name: nameNode.name,
+                  kind: isFun ? 'Function' : 'Variable',
+                  range: nameNode.range,
+                  declarationRange: assignNode.range,
+                  type: isFun ? 'fun' : undefined,
+                };
+                addSymbol(scope, symbol);
+
+                semanticTokens.push({
+                  line: nameNode.range.start.line,
+                  character: nameNode.range.start.character,
+                  length: nameNode.name.length,
+                  tokenType: isFun ? 'function' : 'variable',
+                  tokenModifiers: ['declaration'],
+                });
+
+                references.push({
+                  name: nameNode.name,
+                  range: nameNode.range,
+                  isDeclaration: true,
+                });
+              }
+            }
+          }
+        } else {
+          // Visit left side normally for compound assignments or member access
+          visit(assignNode.left);
+        }
+        // Always visit the right side
+        visit(assignNode.right);
+        break;
+      }
+
       case 'ExpressionStatement': {
         const exprStmt = node as ExpressionStatementNode;
         visit(exprStmt.expression);
+        break;
+      }
+
+      case 'AssignmentExpression': {
+        const assignNode = node as AssignmentExpressionNode;
+        // Treat bare `identifier = expr` as a variable declaration
+        if (assignNode.operator === '=' && assignNode.left.type === 'Identifier') {
+          const nameNode = assignNode.left as IdentifierNode;
+          if (nameNode.name !== '<error>') {
+            const scope = findEnclosingScope(nameNode.range.start.line, nameNode.range.start.character);
+            if (scope) {
+              const isFun = assignNode.right?.type === 'FunctionExpression';
+              const symbol: CatspeakSymbol = {
+                name: nameNode.name,
+                kind: isFun ? 'Function' : 'Variable',
+                range: nameNode.range,
+                declarationRange: assignNode.range,
+                type: isFun ? 'fun' : undefined,
+              };
+              addSymbol(scope, symbol);
+
+              semanticTokens.push({
+                line: nameNode.range.start.line,
+                character: nameNode.range.start.character,
+                length: nameNode.name.length,
+                tokenType: isFun ? 'function' : 'variable',
+                tokenModifiers: ['declaration'],
+              });
+
+              references.push({
+                name: nameNode.name,
+                range: nameNode.range,
+                isDeclaration: true,
+              });
+            }
+          }
+          // Visit the right-hand side
+          visit(assignNode.right);
+        } else {
+          // For non-simple assignments, just recurse into children
+          for (const child of assignNode.children) {
+            visit(child);
+          }
+        }
         break;
       }
 

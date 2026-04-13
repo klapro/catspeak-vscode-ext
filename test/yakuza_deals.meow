@@ -1,0 +1,360 @@
+get_company_index = fun () {
+  if global.numberofcompany <= 0 {
+    return -1
+  }
+  let company_idx = 0
+  let attempts = 0
+  while attempts < 10 {
+    let idx = irandom(global.numberofcompany - 1)
+    if global.company_liq[idx] != 1 {
+      return idx
+    }
+    attempts = attempts + 1
+  }
+  return irandom(global.numberofcompany - 1)
+}
+
+log_debug = fun (msg) {
+  let timestamp = "[" + string(global.day) + "d]"
+  let log_entry = timestamp + " " + msg
+  array_push(self._debug_log, log_entry)
+  if array_length(self._debug_log) > 50 {
+    array_delete(self._debug_log, 0, 1)
+  }
+}
+
+show_debug_console = fun () {
+  if array_length(self._debug_log) == 0 {
+    mods_notify("Debug Log", "No debug messages")
+    return
+  }
+  let output = "DEBUG LOG##"
+  let i = 0
+  let log_len = array_length(self._debug_log)
+  while i < min(10, log_len) {
+    let idx = log_len - 1 - i
+    output = output + self._debug_log[idx] + "#"
+    i = i + 1
+  }
+  show_message(output)
+}
+
+can_afford = fun (amount) {
+  return global.money >= amount
+}
+
+format_money = fun (amount) {
+  if amount >= 1000000 {
+    return string(floor(amount / 1000000)) + "M"
+  }
+  if amount >= 1000 {
+    return string(floor(amount / 1000)) + "K"
+  }
+  return string(amount)
+}
+
+show_company_list = fun () {
+  let list = "COMPANIES:#"
+  let count = 0
+  let i = 0
+  while i < global.numberofcompany {
+    if global.company_liq[i] != 1 {
+      count = count + 1
+      let name = global.company_name[i]
+      let price = global.company_price[i]
+      let profit = floor(global.company_profit[i] * 100)
+      list = list + string(count) + ") " + name + " ($" + string(price) + ", " + string(profit) + "%)#"
+    }
+    i = i + 1
+  }
+  return list
+}
+
+yakuza_espionage_menu = fun () {
+  let company_idx = get_company_index()
+  if company_idx < 0 {
+    mods_notify("Corporate Espionage", "No companies available.")
+    return
+  }
+
+  let cost = 50000
+  if can_afford(cost) == false {
+    mods_notify("Corporate Espionage", "Insufficient funds. Need " + format_money(cost) + ".")
+    return
+  }
+
+  let new_money = global.money - cost
+  global.money = new_money
+  log_debug("Espionage: spent " + format_money(cost))
+
+  let old_profit = global.company_profit[company_idx]
+  let profit_change = (irandom(30) - 10) / 100.0
+  let new_profit = old_profit + profit_change
+
+  if new_profit < 0.01 {
+    new_profit = 0.01
+  }
+  if new_profit > 0.5 {
+    new_profit = 0.5
+  }
+
+  global.company_profit[company_idx] = new_profit
+
+  let company_name = global.company_name[company_idx]
+  let profit_pct = floor(new_profit * 100)
+  let trend = "lower"
+  if profit_change > 0 {
+    trend = "higher"
+  }
+
+  mods_notify("Corporate Espionage", "Our insider in " + company_name + " revealed their profit is " + string(profit_pct) + "% - " + trend + " than expected. Cost: " + format_money(cost))
+}
+
+yakuza_protection_menu = fun () {
+  let cost = 100000
+  if can_afford(cost) == false {
+    mods_notify("Protection Racket", "Insufficient funds. Need " + format_money(cost) + ".")
+    return
+  }
+
+  let new_money = global.money - cost
+  global.money = new_money
+
+  global.yakuza_protected = 1
+  global.yakuza_protection_days = 30
+
+  mods_notify("Protection Racket", "The family will protect your business for 30 days. No random disasters will affect you. Cost: " + format_money(cost))
+}
+
+yakuza_blackmarket_menu = fun () {
+  let company_idx = get_company_index()
+  if company_idx < 0 {
+    mods_notify("Black Market", "No companies available.")
+    return
+  }
+
+  let company_name = global.company_name[company_idx]
+  let price = global.company_price[company_idx]
+
+  let choice = show_question("BLACK MARKET DEAL##Buy or Sell " + company_name + "?##OK = Buy##Cancel = Sell")
+
+  if choice {
+    let max_afford = floor(global.money / price)
+    let max_buy = min(1000, max_afford)
+    let buy_amount = 200 + irandom(max(0, max_buy - 200))
+    let total = buy_amount * price
+
+    if can_afford(total) == false {
+      buy_amount = floor(global.money / price)
+      total = buy_amount * price
+    }
+
+    if buy_amount <= 0 {
+      mods_notify("Black Market", "Insufficient funds.")
+      return
+    }
+
+    let new_money = global.money - total
+    global.money = new_money
+    let current_shares = global.human_finans[1][company_idx]
+    global.human_finans[1][company_idx] = current_shares + buy_amount
+
+    mods_notify("Black Market", "Purchased " + string(buy_amount) + " shares of " + company_name + " through back channels. No market limits applied. Cost: " + format_money(total))
+  } else {
+    let owned = global.human_finans[1][company_idx]
+    if owned <= 0 {
+      mods_notify("Black Market", "You don't own any shares of " + company_name + ".")
+      return
+    }
+
+    let sell_amount = 50 + irandom(min(owned - 1, 300))
+    let earnings = sell_amount * price
+
+    let new_money = global.money + earnings
+    global.money = new_money
+    let current_shares = global.human_finans[1][company_idx]
+    global.human_finans[1][company_idx] = current_shares - sell_amount
+
+    mods_notify("Black Market", "Dumped " + string(sell_amount) + " shares of " + company_name + " on the black market. No market impact. Earned: " + format_money(earnings))
+  }
+}
+
+yakuza_drugs_menu = fun () {
+  let income = 75000 + irandom(150000)
+  let new_money = global.money + income
+  global.money = new_money
+
+  mods_notify("Drug Operations", "The distribution network in the city generated " + format_money(income) + " in profits. The family is pleased with your cooperation.")
+}
+
+yakuza_sabotage_menu = fun () {
+  let company_idx = get_company_index()
+  if company_idx < 0 {
+    mods_notify("Sabotage", "No companies available.")
+    return
+  }
+
+  let cost = 75000
+  if can_afford(cost) == false {
+    mods_notify("Sabotage", "Insufficient funds. Need " + format_money(cost) + ".")
+    return
+  }
+
+  let new_money = global.money - cost
+  global.money = new_money
+
+  let company_name = global.company_name[company_idx]
+  let old_hype = global.company_hype[company_idx]
+  let hype_drop = 0.2 + irandom(20) / 100.0
+  let new_hype = max(0.05, old_hype - hype_drop)
+
+  global.company_hype[company_idx] = new_hype
+
+  mods_notify("Sabotage", "We sent a message to " + company_name + " by burning their warehouse. Their stock will take a significant hit. Cost: " + format_money(cost))
+}
+
+yakuza_extortion_menu = fun () {
+  if global.money < 50000 {
+    mods_notify("Extortion", "Not enough money to pay the families.")
+    return
+  }
+
+  let payment = 50000 + irandom(50000)
+  let new_money = global.money - payment
+  global.money = new_money
+
+  global.yakuza_extortion_paid = 1
+
+  mods_notify("Extortion", "You paid the families " + format_money(payment) + " to leave you alone. They'll stay out of your way for now.")
+}
+
+yakuza_insider_trading_menu = fun () {
+  let cost = 100000
+  if can_afford(cost) == false {
+    mods_notify("Insider Trading", "Insufficient funds. Need " + format_money(cost) + ".")
+    return
+  }
+
+  let new_money = global.money - cost
+  global.money = new_money
+
+  let company_idx = get_company_index()
+  if company_idx < 0 {
+    return
+  }
+
+  let company_name = global.company_name[company_idx]
+  let current_price = global.company_price[company_idx]
+  let predicted_change = (irandom(40) - 15) / 100.0
+  let predicted_price = floor(current_price * (1 + predicted_change))
+
+  let direction = "DOWN"
+  if predicted_change > 0 {
+    direction = "UP"
+  }
+
+  mods_notify("Insider Trading", "Our contacts say " + company_name + " stock is going " + direction + "! Current: $" + string(current_price) + ", Predicted: $" + string(predicted_price))
+}
+
+open_yakuza_menu = fun () {
+  let menu_text = "YAKUZA FAMILY MENU##"
+    + "Current Funds: " + format_money(global.money) + "##"
+    + "1) Corporate Espionage - 50K#"
+    + "2) Protection Racket - 100K#"
+    + "3) Black Market Deals#"
+    + "4) Drug Operations#"
+    + "5) Sabotage - 75K#"
+    + "6) Extortion - 50-100K#"
+    + "7) Insider Trading - 100K#"
+    + "##Press Y to open this menu"
+
+  show_message(menu_text)
+}
+
+mod_register_func("yakuza.open_menu", open_yakuza_menu)
+mod_register_func("yakuza.espionage", yakuza_espionage_menu)
+mod_register_func("yakuza.protection", yakuza_protection_menu)
+mod_register_func("yakuza.blackmarket", yakuza_blackmarket_menu)
+mod_register_func("yakuza.drugs", yakuza_drugs_menu)
+mod_register_func("yakuza.sabotage", yakuza_sabotage_menu)
+mod_register_func("yakuza.extortion", yakuza_extortion_menu)
+mod_register_func("yakuza.insider", yakuza_insider_trading_menu)
+mod_register_func("yakuza.debug", show_debug_console)
+
+let mod = {
+  name: "Yakuza Deals",
+  description: "Access the underground: espionage, protection, black market, drugs, sabotage, extortion, insider trading.",
+  name_en: "Yakuza Deals",
+  description_en: "Access the underground: espionage, protection, black market, drugs, sabotage, extortion, insider trading.",
+
+  _debug_log: undefined,
+  _next_offer: 0,
+  _offer_active: false,
+  yakuza_button_x: 0,
+  yakuza_button_y: 0,
+  yakuza_button_w: 150,
+  yakuza_button_h: 30,
+
+  start_new_game: fun () {
+    self._debug_log = array_create(0)
+    self._next_offer = global.day + 2
+    self._offer_active = false
+    global.yakuza_protected = 0
+    global.yakuza_protection_days = 0
+  },
+
+  after_game_load: fun () {
+    if is_undefined(self._debug_log) {
+      self._debug_log = array_create(0)
+    }
+    self._next_offer = global.day + 2
+    self._offer_active = false
+  },
+
+  new_day: fun () {
+    if global.yakuza_protected == 1 {
+      global.yakuza_protection_days = global.yakuza_protection_days - 1
+      if global.yakuza_protection_days <= 0 {
+        global.yakuza_protected = 0
+        mods_notify("Protection Ended", "Your protection from the family has expired.")
+      }
+    }
+
+    if global.day >= self._next_offer and self._offer_active == false {
+      if irandom(100) < 25 {
+        self._offer_active = true
+        self._next_offer = global.day + 4 + irandom(4)
+        mods_notify("Mysterious Contact", "A man in a suit approaches you in the alley.#'We have opportunities for someone like you...'")
+      }
+    }
+  },
+
+  step: fun () {
+  },
+
+  draw_gui: fun () {
+    if global.yakuza_protected == 1 {
+      draw_set_alpha(0.8)
+      draw_set_color(c_black)
+      draw_rectangle(5, 5, 280, 30, false)
+      draw_set_alpha(1.0)
+      draw_set_color(c_red)
+      draw_text(10, 10, "YAKUZA PROTECTED: " + string(global.yakuza_protection_days) + " days")
+      draw_set_alpha(1.0)
+    }
+
+    let btn_w = 150
+    let btn_h = 30
+    let btn_x = window_get_width() - btn_w - 10
+    let btn_y = 10
+
+    draw_set_color(make_color_rgb(120, 30, 30))
+    draw_rectangle(btn_x, btn_y, btn_x + btn_w, btn_y + btn_h, false)
+    
+    draw_set_color(c_white)
+    draw_text(btn_x + 15, btn_y + 10, "YAKUZA DEALS")
+    draw_set_alpha(1.0)
+  },
+}
+
+return mod
