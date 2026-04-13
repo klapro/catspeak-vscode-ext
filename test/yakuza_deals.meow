@@ -53,6 +53,7 @@ format_money = fun (amount) {
   return string(amount)
 }
 
+-- test
 show_company_list = fun () {
   let list = "COMPANIES:#"
   let count = 0

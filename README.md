@@ -5,16 +5,20 @@ Language support for the [Catspeak](https://github.com/katsaii/catspeak-lang) sc
 ## Features
 
 - Syntax highlighting for .meow files
-- IntelliSense code completion
-- Go to definition
-- Find all references
-- Hover information with doc comments
-- GML built-in function documentation
+- IntelliSense code completion with GML builtins and project definitions
+- Go to definition and find all references
+- Hover information with doc comments (`--` comments above declarations)
+- 2600+ GML built-in functions, variables, and constants recognized
+- Project config to define your game's custom globals and functions
+- Import API definitions from YAML/JSON files
+- Struct literal support (`{ key: value }` syntax)
+- Multi-line string concatenation
 - Semantic highlighting
-- Error diagnostics
+- Real-time error diagnostics
 - Code formatting
 - Bracket matching and auto-closing
 - Comment toggling
+- Status bar indicator for project config
 
 ## Configuration
 
@@ -26,15 +30,11 @@ Configure the extension in VSCode settings under the `catspeak` namespace:
 - `catspeak.formatting.useTabs`: Use tabs instead of spaces
 - `catspeak.autoClosingBrackets`: Enable/disable auto-closing brackets
 
-## Usage
-
-Open any `.meow` file and the extension will automatically activate.
-
 ## Project Config
 
-Define your game's custom globals and functions so the extension recognizes them.
+Define your game's custom globals and functions so the extension recognizes them. A status bar item at the bottom shows the config status — click it to open or create the config.
 
-Run `Catspeak: Init Project Config` from the command palette to create a `catspeak.config.json` in your workspace. You can also import from a YAML/JSON API file:
+Run `Catspeak: Init Project Config` from the command palette to scaffold a `catspeak.config.json`:
 
 ```json
 {
@@ -49,7 +49,14 @@ Run `Catspeak: Init Project Config` from the command palette to create a `catspe
 }
 ```
 
-GML built-in names are automatically skipped from imports.
+The `import` field supports YAML and JSON files with an OpenAPI-style structure. GML built-in names are automatically skipped from imports. Descriptions and examples from the imported file are shown in hover tooltips.
+
+After editing the config, run `Catspeak: Restart Language Server` to reload.
+
+## Commands
+
+- `Catspeak: Init Project Config` — Create a catspeak.config.json
+- `Catspeak: Restart Language Server` — Reload the language server
 
 ## Credits
 
