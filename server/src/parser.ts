@@ -620,7 +620,8 @@ export function parse(source: string): ParseResult {
 
   function parseAdditive(): ASTNode {
     let left = parseMultiplicative();
-    while (check('Operator') && (peekValue() === '+' || peekValue() === '-')) {
+    while (isBinOpAhead('+', '-')) {
+      skipNewlines();
       const op = advance().value;
       skipNewlines();
       const right = parseMultiplicative();
@@ -638,6 +639,24 @@ export function parse(source: string): ParseResult {
       left = makeBinary(op, left, right);
     }
     return left;
+  }
+
+  /**
+   * Peek past newlines to check if a binary operator is ahead.
+   * This allows multi-line expressions like:
+   *   "hello"
+   *   + " world"
+   */
+  function isBinOpAhead(...ops: string[]): boolean {
+    // First check without skipping newlines
+    if (check('Operator') && ops.includes(peekValue())) return true;
+    // Peek past newlines
+    let ahead = pos;
+    while (ahead < tokens.length && tokens[ahead].type === 'Newline') ahead++;
+    if (ahead < tokens.length && tokens[ahead].type === 'Operator' && ops.includes(tokens[ahead].value)) {
+      return true;
+    }
+    return false;
   }
 
   function makeBinary(op: string, left: ASTNode, right: ASTNode): BinaryExpressionNode {
